@@ -1,9 +1,12 @@
 package com.example.weather
 
+import android.graphics.Color.parseColor
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.example.weather.api.NetworkResponse
 import com.example.weather.api.WeatherModel
+import com.skydoves.landscapist.coil.CoilImage
 
 
 @Composable
@@ -96,8 +100,9 @@ Icon(imageVector = Icons.Default.Search,
 @Composable
 fun WeatherDetails(data : WeatherModel) {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).background(Color(parseColor("#e3d9fa"))).fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
+
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -119,10 +124,9 @@ Spacer(modifier = Modifier.height(16.dp))
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
-        AsyncImage(
+        CoilImage(
             modifier = Modifier.size(160.dp),
-            model = "https:${data.current.condition.icon}".replace("64x64","128x128"),
-            contentDescription = "Condition icon"
+            imageModel = {"https:${data.current.condition.icon}".replace("64x64","128x128")},
         )
 
         Text(
@@ -134,7 +138,7 @@ Spacer(modifier = Modifier.height(16.dp))
         Spacer(modifier = Modifier.height(16.dp))
         Card {
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().background(Color(parseColor("#d8cbf5")))
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
