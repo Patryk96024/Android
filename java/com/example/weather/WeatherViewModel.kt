@@ -29,7 +29,7 @@ _weatherResult.value = NetworkResponse.Loading
                         _weatherResult.value = NetworkResponse.Success(it)
                     }
                 } else {
-                    _weatherResult.value = NetworkResponse.Error("Failed to load data")
+                   _weatherResult.value = NetworkResponse.Error("Please type correct city name")
                 }
             }
             catch (e : Exception){
