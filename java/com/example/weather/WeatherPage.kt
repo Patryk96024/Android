@@ -1,6 +1,7 @@
 package com.example.weather
 
 import android.graphics.Color.parseColor
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.example.weather.api.HourWeather
 import com.example.weather.api.NetworkResponse
 import com.example.weather.api.WeatherModel
 import com.skydoves.landscapist.coil.CoilImage
@@ -117,57 +119,101 @@ fun WeatherDetails(data : WeatherModel) {
             Spacer(modifier = Modifier.width(8.dp))
             Text(text = data.location.country, fontSize = 18.sp,color = Color.Gray)
         }
-Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = " ${data.current.temp_c} °C",
-            fontSize = 56.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
-        CoilImage(
-            modifier = Modifier.size(160.dp),
-            imageModel = {"https:${data.current.condition.icon}".replace("64x64","128x128")},
-        )
+    Spacer(modifier = Modifier.height(16.dp))
+    Text(
+        text = " ${data.current.temp_c} °C",
+        fontSize = 56.sp,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center
+    )
+    CoilImage(
+        modifier = Modifier.size(160.dp),
+        imageModel = {"https:${data.current.condition.icon}".replace("64x64","128x128")},
+    )
 
-        Text(
-            text = data.current.condition.text,
-            fontSize = 20.sp,
-            textAlign = TextAlign.Center,
-            color = Color.Gray
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Card {
-            Column(
-                modifier = Modifier.fillMaxWidth().background(Color(parseColor("#d8cbf5")))
+    Text(
+        text = data.current.condition.text,
+        fontSize = 20.sp,
+        textAlign = TextAlign.Center,
+        color = Color.Gray
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+    Card {
+        Column(
+            modifier = Modifier.fillMaxWidth().background(Color(parseColor("#d8cbf5")))
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    WeatherKeyVal("Humidity",data.current.humidity)
-                    WeatherKeyVal("Wind Speed",data.current.wind_kph+" km/h")
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    WeatherKeyVal("UV",data.current.uv)
-                    WeatherKeyVal("Participation",data.current.precip_mm+" mm")
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    WeatherKeyVal("Local Time",data.location.localtime.split(" ")[1])
-                    WeatherKeyVal("Local Date",data.location.localtime.split(" ")[0])
-                }
+                WeatherKeyVal("Humidity",data.current.humidity)
+                WeatherKeyVal("Wind Speed",data.current.wind_kph+" km/h")
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                WeatherKeyVal("UV",data.current.uv)
+                WeatherKeyVal("Participation",data.current.precip_mm+" mm")
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                WeatherKeyVal("Local Time",data.location.localtime.split(" ")[1])
+                WeatherKeyVal("Local Date",data.location.localtime.split(" ")[0])
             }
         }
-
-
-
     }
 
+    Text(
+        text = "Hourly forecast",
+        fontSize = 24.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(8.dp)
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+
+    val currentHour = data.location.localtime.split(" ")[1].split(":")[0]
+
+    val filteredHours = data.forecast.forecastday.firstOrNull()?.hour
+        ?.filter { hourData ->
+            val hour = hourData.time.split(" ")[1].split(":")[0]
+            hour >= currentHour
+        }
+        ?.take(5)
+
+    filteredHours?.let { hours ->
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            hours.forEachIndexed { index, hourData ->
+                HourlyWeatherVal(hourData, isNow = index == 0)
+            }
+            }
+        }
+    }
+}
+
+@Composable
+fun HourlyWeatherVal(hour: HourWeather, isNow: Boolean) {
+    Column(
+        modifier = Modifier.padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = if (isNow) "NOW" else hour.time.split(" ")[1].substring(0, 5),
+            fontSize = 14.sp, fontWeight = FontWeight.SemiBold
+        )
+        CoilImage(
+            modifier = Modifier.size(48.dp),
+            imageModel = { "https:${hour.condition.icon}".replace("64x64", "128x128") }
+        )
+        Text(
+            text = "${hour.temp_c}°C", fontSize = 14.sp
+        )
+    }
 }
 
 @Composable
