@@ -11,5 +11,6 @@ data class ForecastDay(
 data class HourWeather(
     val time: String,
     val temp_c: Double,
+    val temp_f: Double,
     val condition: Condition
 )
