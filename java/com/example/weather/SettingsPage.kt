@@ -36,9 +36,14 @@ fun SettingsPage(onSettingsChanged: () -> Unit) {
 
     var darkTheme by remember { mutableStateOf(prefs.getBoolean("darkTheme", false)) }
     val unitOptions = listOf("Celsius", "Fahrenheit", "Kelvin")
-    var expanded by remember { mutableStateOf(false) }
+    var expandedTemp by remember { mutableStateOf(false) }
     var selectedUnit by remember {
         mutableStateOf(prefs.getString("temperatureUnit", "Celsius") ?: "Celsius")
+    }
+    val windUnitOptions = listOf("km/h", "mph", "m/s")
+    var expandedWind by remember { mutableStateOf(false) }
+    var selectedWindUnit by remember {
+        mutableStateOf(prefs.getString("windSpeedUnit", "km/h") ?: "km/h")
     }
 
     val targetTopColor = if (!darkTheme) "#d8cbf5" else "#2f2c36"
@@ -79,18 +84,16 @@ fun SettingsPage(onSettingsChanged: () -> Unit) {
                 )
             }
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Temperature Unit", color = Color(txtColor.toColorInt()))
                 Spacer(modifier = Modifier.weight(1f))
                 Box {
-                    OutlinedButton(onClick = { expanded = true }) {
+                    OutlinedButton(onClick = { expandedTemp = true }) {
                         Text(selectedUnit)
                     }
                     DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
+                        expanded = expandedTemp,
+                        onDismissRequest = { expandedTemp = false }
                     ) {
                         unitOptions.forEach { unit ->
                             DropdownMenuItem(
@@ -100,7 +103,35 @@ fun SettingsPage(onSettingsChanged: () -> Unit) {
                                     prefs.edit {
                                         putString("temperatureUnit", unit)
                                     }
-                                    expanded = false
+                                    expandedTemp = false
+                                    onSettingsChanged()
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Wind Speed Unit", color = Color(txtColor.toColorInt()))
+                Spacer(modifier = Modifier.weight(1f))
+                Box {
+                    OutlinedButton(onClick = { expandedWind = true }) {
+                        Text(selectedWindUnit)
+                    }
+                    DropdownMenu(
+                        expanded = expandedWind,
+                        onDismissRequest = { expandedWind = false }
+                    ) {
+                        windUnitOptions.forEach { unit ->
+                            DropdownMenuItem(
+                                text = { Text(unit) },
+                                onClick = {
+                                    selectedWindUnit = unit
+                                    prefs.edit {
+                                        putString("windSpeedUnit", unit)
+                                    }
+                                    expandedWind = false
                                     onSettingsChanged()
                                 }
                             )

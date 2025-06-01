@@ -192,7 +192,7 @@ fun WeatherDetails(data: WeatherModel, reload: Int) {
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     WeatherKeyVal("Humidity", data.current.humidity, reload)
-                    WeatherKeyVal("Wind Speed", data.current.wind_kph + " km/h", reload)
+                    WeatherKeyVal("Wind Speed", getWindSpeedUnit(data.current.wind_kph.toDouble(), reload), reload)
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -213,7 +213,7 @@ fun WeatherDetails(data: WeatherModel, reload: Int) {
 
         Text(
             text = "Hourly forecast",
-            fontSize = 24.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(8.dp),
             color = getTextColor(reload)
@@ -294,6 +294,17 @@ fun isDarkTheme(reload: Int): Boolean {
 fun getTextColor(reload: Int): Color {
     val txtColor = if (!isDarkTheme(reload)) "#000000" else "#FFFFFF"
     return Color(txtColor.toColorInt())
+}
+
+@Composable
+fun getWindSpeedUnit(windKph: Double, reload: Int): String {
+    val prefs = getPrefs(reload)
+    return when (prefs.getString("windSpeedUnit", "km/h")) {
+        "km/h" -> "${windKph} km/h"
+        "mph" -> "${(windKph * 0.621371).let { round(it * 100) / 100 }} mph"
+        "m/s" -> "${(windKph / 3.6).let { round(it * 100) / 100 }} m/s"
+        else -> "${windKph} km/h"
+    }
 }
 
 @Composable
