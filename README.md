@@ -1,4 +1,4 @@
-Otwórz README.md i skopiuj wszystko do AndroidManifest.xml pod xmlns:
+Otwórz README.md poprzez edytowanie i skopiuj wszystko do AndroidManifest.xml pod xmlns:
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:allowBackup="true"
