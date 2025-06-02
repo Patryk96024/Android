@@ -68,7 +68,7 @@ fun WeatherPage(viewModel: WeatherViewModel) {
         }
     }
 
-    val bgColor = if (!isDarkTheme(reload)) "#FFFFFF" else "#333333"
+    val bgColor = if (!isDarkTheme(reload)) "#e3d9fa" else "#333333"
 
     Column(
         modifier = Modifier
